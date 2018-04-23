@@ -24,7 +24,7 @@ class Future:
     
     def __str__(self):
         return str(self.get_result())
-
+"""
 def go(func):
     fu = Future()
     def _exec():
@@ -33,6 +33,17 @@ def go(func):
         t.start()
         return fu
     return _exec
+""" 
+class go:
+    def __init__(self, func):
+        self._func = func
+       
+    def __call__(self):
+        fu = Future()
+        t=threading.Thread(target=wrapper, args=(self._func, fu))
+        t.setDaemon(True)
+        t.start()
+        return fu
     
 def wrapper(func, fu):
     fu.set_result(func())

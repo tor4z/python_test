@@ -1,5 +1,6 @@
 import http.server
 import socketserver
+import time
 
 PORT = 8000
 
@@ -10,6 +11,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                          'text/plain; charset=utf-8')
         self.end_headers()
         self.wfile.write("It's work.".encode('utf-8'))
+        time.sleep(2)
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print("serving at port", PORT)
