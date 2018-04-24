@@ -1,6 +1,7 @@
 import time
 import sys
 
+"""
 toolbar_width = 40
 
 # setup toolbar
@@ -15,12 +16,15 @@ for i in range(toolbar_width):
     sys.stdout.flush()
 
 sys.stdout.write("\n")
-
+"""
 
 """
 Loading
 """
-for x in range (0,5):  
-    b = "Loading" + "." * x
-    print (b, end="\r")
-    time.sleep(1)
+def bar():
+    for x in range (0,3):  
+        b = "Loading" + "." * x
+        print (b, end="\r")
+        time.sleep(0.1)
+        
+bar()
