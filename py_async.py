@@ -1,29 +1,37 @@
 import random
 import asyncio
 from asyncio.futures import Future
+from asyncio.coroutines import coroutine
 import time
 
-def worker(n):
+@coroutine
+def my_sleep(t):
+    loop = asyncio.get_event_loop()
+    fut = loop.create_future()
+    h = fut._loop.call_later(t, 
+                        asyncio.futures._set_result_unless_cancelled, 
+                        fut, None)
+    try:
+        return (yield from fut)
+    finally:
+        pass
+        h.cancel()
+
+async def worker(n):
     print(f"worker {n} start")
-    asyncio.sleep(random.randint(1, 3))
+    # asyncio.sleep(random.randint(1, 3))
+    my_sleep(1)
     print(f"worker {n} finished")
-    #fut.set_result(None)
    
-def runner():
-    futs = [] 
+async def runner():
     for i in range(5):
-        fut = Future()
-        futs.append(fut)
-        worker(i, fut)
-    return futs
+        await worker(i)
 
 async def main():
-    futs = runner()
-    for fut in futs:
-        await fut
+    await runner()
     print("exit")
 
 if __name__ == "__main__":
-    main()
-    #loop = asyncio.get_event_loop()
-    #loop.run_until_complete(main())
+    # worker(1)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
