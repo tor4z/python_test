@@ -22,9 +22,9 @@ sys.stdout.write("\n")
 Loading
 """
 def bar():
-    for x in range (0,3):  
-        b = "Loading" + "." * x
+    for x in range (0,30):  
+        b = "Loading {0}".format("." * x)
         print (b, end="\r")
-        time.sleep(0.1)
+        time.sleep(0.01)
         
 bar()
