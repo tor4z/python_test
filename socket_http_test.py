@@ -25,8 +25,8 @@ body = b''
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     s.sendall(data.encode())
-    print(s.recv(1024))
-    body = s.recv(1024*9)
-
-print("==========================")
-print(body.decode("GBK"))
+    while True:
+        data = s.recv(1024)
+        print(data.decode("gbk"))
+        if not data:
+            break
