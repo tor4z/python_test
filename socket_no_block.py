@@ -24,37 +24,38 @@ Raised when an operation would block on an object (e.g. socket)
 set for non-blocking operation. Corresponds to errno
 EAGAIN, EALREADY, EWOULDBLOCK and EINPROGRESS.
 '''
+timeout = 10
 
-def send(sock):
-    try:
-        time.sleep(1)
-        print("start send data.")
-        sock.sendall(b'data,')
-    except BlockingIOError:
-        LOOP.remove_writer(sock.fileno())
-        LOOP.add_writer(sock.fileno(), functools.partial(send, sock))
-    except:
-        print("exit.")
-        LOOP.remove_writer(sock.fileno())
+def send(sock, end):
+    now = time.time()
+    if now > end:
+        print("exit timeout.")
         LOOP.stop()
-
+    try:
+        # time.sleep(1)
+        print(">>")
+        sock.sendall(b'Raised when an operation would block on an object (e.g. socket)')
+    except BlockingIOError as e:
+        LOOP.remove_writer(sock.fileno())
+        
 def recv(sock):
     try:
-        time.sleep(1)
-        print("start recv data.")
-        print(sock.recv(1024))
+        body = sock.recv(1024)
+        if not body:
+            LOOP.remove_reader(sock.fileno())
+            print("exit")
+            LOOP.stop()
+        else:
+            print(body)
     except BlockingIOError:
-        LOOP.remove_reader(sock.fileno())
-        LOOP.add_reader(sock.fileno(), functools.partial(recv, sock))
-    except:
-        print("exit")
-        LOOP.remove_reader(sock.fileno())
-        LOOP.stop()
+        if not body:
+            LOOP.remove_reader(sock.fileno())
+            print("exit")
+            LOOP.stop()
 
-LOOP.add_writer(sock.fileno(), functools.partial(send, sock))
+
+
+LOOP.add_writer(sock.fileno(), functools.partial(send, sock, time.time()+timeout))
 LOOP.add_reader(sock.fileno(), functools.partial(recv, sock))
-
-sock.sendall(b'start')
-
 
 LOOP.run_forever()

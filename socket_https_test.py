@@ -25,15 +25,19 @@ body = b''
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 context = ssl.create_default_context()
 ssl_s = context.wrap_socket(s, server_hostname=HOST)
-
 ssl_s.connect((HOST, PORT))
+ssl_s.settimeout(0.5)
+
 ssl_s.sendall(data.encode())
-
 while True:
-    body = ssl_s.recv(1024)
-    print(body.decode("utf-8"))
-    if not body:
+    try:
+        chunck = ssl_s.recv(65536)
+    except:
+        print("exp exit.")
         break
-
+    if not chunck:
+        print("exit")
+        break
+    print("read chunck", len(chunck))
 
 
