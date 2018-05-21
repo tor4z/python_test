@@ -1,33 +1,39 @@
-import sys, traceback
+import traceback
 
-def lumberjack():
-    bright_side_of_death()
 
-def bright_side_of_death():
-    return tuple()[0]
+class A:
+    def __init__(self):
+        pass
 
-try:
-    lumberjack()
-except IndexError:
-    exc_type, exc_value, exc_traceback = sys.exc_info()
-    print("*** print_tb:")
-    traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
-    print("*** print_exception:")
-    # exc_type below is ignored on 3.5 and later
-    traceback.print_exception(exc_type, exc_value, exc_traceback,
-                              limit=2, file=sys.stdout)
-    print("*** print_exc:")
-    traceback.print_exc(limit=2, file=sys.stdout)
-    print("*** format_exc, first and last line:")
-    formatted_lines = traceback.format_exc().splitlines()
-    print(formatted_lines[0])
-    print(formatted_lines[-1])
-    print("*** format_exception:")
-    # exc_type below is ignored on 3.5 and later
-    print(repr(traceback.format_exception(exc_type, exc_value,
-                                          exc_traceback)))
-    print("*** extract_tb:")
-    print(repr(traceback.extract_tb(exc_traceback)))
-    print("*** format_tb:")
-    print(repr(traceback.format_tb(exc_traceback)))
-    print("*** tb_lineno:", exc_traceback.tb_lineno)
+    def tb(self):
+        es = traceback.extract_stack()
+        print(es)
+        fs = es[-2]
+        print(fs.name)
+        print(fs.locals)
+
+def another_function():
+    lumberstack(A())
+    lumberstack(A())
+
+
+def lumberstack(a):
+    a.tb()
+
+another_function()
+
+"""
+[<FrameSummary file traceback_test.py, line 23 in <module>>,
+<FrameSummary file traceback_test.py, line 16 in another_function>,
+<FrameSummary file traceback_test.py, line 21 in lumberstack>,
+<FrameSummary file traceback_test.py, line 9 in tb>]
+lumberstack
+None
+
+[<FrameSummary file traceback_test.py, line 23 in <module>>,
+<FrameSummary file traceback_test.py, line 17 in another_function>,
+<FrameSummary file traceback_test.py, line 21 in lumberstack>,
+<FrameSummary file traceback_test.py, line 9 in tb>]
+lumberstack
+None
+"""
